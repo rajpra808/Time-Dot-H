@@ -142,8 +142,14 @@ const Today_Date_Time = new Date().toISOString().replace(/\..+/, '.0Z');
 const top_plateforms = new Suggestions('Contests on Codechef','About Time.H','Contests on google','Contests on Hackerearth','Help','Contests on TopCoder',"Contests on Codeforces");
 
 //Welcome intent handling
+
 app.intent('Default Welcome Intent', (conv) => {
   conv.ask(conv.user.last.seen ? getRandomItem(prompts.welcome_back) : getRandomItem(prompts.welcome));
+  const sml = '<speak> As You Know'+
+            '<audio src="https://tinyurl.com/yxhjg7yt"/>'+
+          '</speak>';
+  conv.ask(sml);
+
   conv.ask(top_plateforms);
 });
 
