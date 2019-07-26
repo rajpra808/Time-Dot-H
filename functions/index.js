@@ -1,5 +1,5 @@
 'use strict';
-const name = "Time Dot H";
+const name = "Pro Time";
 // requirements
 const {
   dialogflow,
@@ -39,8 +39,9 @@ const prompts = {
     'Alright.'
   ],
   'help': [
-    'You can listen Motivational Songs in this app',
-    'You can ask for the track to be repeated or you can ask for the next track. What do you want to do now?'
+    `I can help you find coding competitions on various platforms.
+  For example To know contest on codechef say "Contest on Codechef"`,
+    'You can ask me to find contest on a Coding Plateform such as "Codechef". What do you want to do now?'
   ],
   'error': [
     'Oops! Something went wrong. Please try again later.'
@@ -139,8 +140,7 @@ const clist_url = "https://clist.by/api/v1/json/contest/?";
 const Today_Date_Time = new Date().toISOString().replace(/\..+/, '.0Z');
 
 //Suggestions
-const top_plateforms = new Suggestions('Contests on Codechef','About Time.H','Contests on google','Contests on Hackerearth','Help','Contests on TopCoder',"Contests on Codeforces");
-
+const top_plateforms = new Suggestions('Contests on Codechef','About Pro Time','Contests on google','Help');
 //Welcome intent handling
 
 app.intent('Default Welcome Intent', (conv) => {
@@ -153,6 +153,8 @@ app.intent('Default Welcome Intent', (conv) => {
   conv.ask(top_plateforms);
 });
 
+
+var dataofContests = [];
 
 app.intent('Spacial Intent', (conv,{pname}) => {
   const upcomming_con_url = clist_url+"resource__name="+pname[0]+"&username="+User_Name+"&api_key="+API_Key+"&end__gt="+Today_Date_Time+"&order_by=start";
@@ -167,6 +169,7 @@ app.intent('Spacial Intent', (conv,{pname}) => {
     .then((json) => {
       const data = json.objects;
       const contests = [];
+      dataofContests.push(data[0]);
       var ContestsCount=data.length;
       if(ContestsCount > 9)
       {
@@ -179,7 +182,7 @@ app.intent('Spacial Intent', (conv,{pname}) => {
 
                 var dis = 'Start : '+ GetISTtime(data[i].start) + ' \nEnd : '+GetISTtime(data[i].end);
                 var x = new BrowseCarouselItem({
-                  title: data[i].event,
+                  title:'('+(i+1).toString()+') '+data[i].event,
                   url: data[i].href,
                   description: dis,
                   image: new Image({
@@ -221,11 +224,17 @@ app.intent('Spacial Intent', (conv,{pname}) => {
         conv.ask(getRandomItem(prompts.NoContests));
       }
       conv.ask(top_plateforms);
+
       return;
     })
     .catch(()=>{
       conv.ask("errror");
     });
+});
+
+app.intent('Help', (conv) => {
+  conv.ask(getRandomItem(prompts.help));
+  conv.ask(top_plateforms);
 });
 
 
